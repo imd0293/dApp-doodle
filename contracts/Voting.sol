@@ -1,17 +1,12 @@
 pragma solidity ^0.7.0;;
 
 contract Schedule {
-    struct Proposal{
-        string scheduleName;
-        uint dayAvaliable;
-        uint hourAvaliable;
-    }
-
     struct Pick{
         uint8 pickDay;
         uint8 pickHour;
         uint8 pickMinute;
         uint8 pickMonth;
+
         mapping (address => Pick) public picks;
         address[] picksAddress;
     }
@@ -20,9 +15,6 @@ contract Schedule {
     uint constant HOUR_IN_SECONDS = 3600;
     uint constant MINUTE_IN_SECONDS = 60;
 
-    Proposal[] public proposals;
-
-    event CreatedProposalEvent();
     event CreatedPickEvent();
 
     address public dateTimeAddr = xxxxxxx;
