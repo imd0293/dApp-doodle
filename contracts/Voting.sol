@@ -6,33 +6,25 @@ contract Schedule {
         uint8 pickHour;
         uint8 pickMinute;
         uint8 pickMonth;
-
-        mapping (address => Pick) public picks;
-        address[] picksAddress;
     }
 
     uint constant DAY_IN_SECONDS = 86400;
     uint constant HOUR_IN_SECONDS = 3600;
     uint constant MINUTE_IN_SECONDS = 60;
 
-    event CreatedPickEvent();
-
-    address public dateTimeAddr = xxxxxxx;
-    DateTime dateTime = DateTime(dateTimeAddr);
-
     function getDaysInMonth(uint8 month) public returns (uint8){
         if (month == 2){
             return 29;
         } 
-        else if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12){
-            return 31;
+        else if (month % 2 == 0){
+            return 30;
         }
         else{
-            return 30;
+            return 31;
         }
     }
 
-    function getTimestamp(uint timestamp) public returns(_DateTime datetime){
+    function getTimestamp(uint timestamp) public returns (Schedule datetime){
         uint secondsCounted = 0;
         uint8 i;
         uint secondsInMonth;
@@ -58,11 +50,6 @@ contract Schedule {
         datetime.pickDay = getScheduleDay(timestamp);
     }
 
-
-    function pickDay() public {
-        pickDay = dayAvaliable;
-    }
-
     function getScheduleDay(uint timestamp) public constant returns (uint8){
         return getTimestamp(timestamp).pickDay;
     }
@@ -71,5 +58,8 @@ contract Schedule {
     }
     function getScheduleMinute(uint timestamp) public constant returns (uint8){
         return uint8((timestamp / 60) % 60);
+    }
+    function getScheduleMonth(uint timestamp) public pure returns (uint8) {
+        return getTimestamp(timestamp).pickMonth;
     }
 }
