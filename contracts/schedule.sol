@@ -1,4 +1,4 @@
-pragma solidity ^0.7.0;;
+pragma solidity ^0.8.4;
 
 contract Schedule {
     struct Pick{
@@ -7,6 +7,10 @@ contract Schedule {
         uint8 pickMinute;
         uint8 pickMonth;
     }
+
+    address owner;
+    mapping(address => uint) scheduleData;
+    address[] schedule;
 
     uint constant DAY_IN_SECONDS = 86400;
     uint constant HOUR_IN_SECONDS = 3600;
@@ -31,35 +35,47 @@ contract Schedule {
 
         for (i = 1; i <= 12; i++){
             secondsInMonth = DAY_IN_SECONDS * getDaysInMonth(i);
-            if (secondsInMonth + secondsCounted) > timestamp){
+            if ((secondsInMonth + secondsCounted) > timestamp){
                 datetime.pickMonth = i;
                 break;
             }
             secondsCounted += secondsInMonth;
         }
         for (i = 1; i <= getDaysInMonth(datetime); i++){
-            if (DAY_IN_SECONDS + secondsCounted > timestamp){
+            if ((DAY_IN_SECONDS + secondsCounted) > timestamp){
                 datetime.pickDay = i;
                 break;  
             }
             secondsCounted += DAY_IN_SECONDS;
         }
-
         datetime.pickHour = getScheduleHour(timestamp);
         datetime.pickMinute = getScheduleMinute(timestamp);
         datetime.pickDay = getScheduleDay(timestamp);
     }
 
-    function getScheduleDay(uint timestamp) public constant returns (uint8){
+    function getScheduleDay(uint timestamp) public returns (uint8){
         return getTimestamp(timestamp).pickDay;
     }
-    function getScheduleHour(uint timestamp) public constant returns (uint8){
+    function getScheduleHour(uint timestamp) public returns (uint8){
         return uint8((timestamp / 60 / 60) % 24);
     }
-    function getScheduleMinute(uint timestamp) public constant returns (uint8){
+    function getScheduleMinute(uint timestamp) public returns (uint8){
         return uint8((timestamp / 60) % 60);
     }
-    function getScheduleMonth(uint timestamp) public pure returns (uint8) {
+    function getScheduleMonth(uint timestamp) public returns (uint8) {
         return getTimestamp(timestamp).pickMonth;
+    }
+    function calculateScheduleTimestamp(uint8 month, uint8 day, uint8 hour, uint8 minute) public returns (uint timestamp) {
+        uint16 i;
+        uint8[12] memory monthDaysCounts;
+        monthDaysCounts = getDaysInMonth(month);
+
+        for (i = 1; i < month; i++) {
+            timestamp += DAY_IN_SECONDS * monthDaysCounts[i - 1];
+        }
+        timestamp += DAY_IN_SECONDS * (day - 1);
+        timestamp += HOUR_IN_SECONDS * (hour);
+        timestamp += MINUTE_IN_SECONDS * (minute);
+        return timestamp;
     }
 }
