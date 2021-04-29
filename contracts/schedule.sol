@@ -1,6 +1,6 @@
 pragma solidity ^0.8.4;
 
-import "owner.sol";
+import "./owner.sol";
 
 contract Schedule {
     struct Pick{
