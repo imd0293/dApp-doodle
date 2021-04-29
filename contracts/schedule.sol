@@ -1,5 +1,7 @@
 pragma solidity ^0.8.4;
 
+import "owner.sol";
+
 contract Schedule {
     struct Pick{
         uint8 pickDay;
@@ -10,7 +12,8 @@ contract Schedule {
 
     address owner;
     mapping(address => uint) scheduleData;
-    address[] schedule;
+    address[] public schedule;
+    Pick[] public pick;
 
     uint constant DAY_IN_SECONDS = 86400;
     uint constant HOUR_IN_SECONDS = 3600;
@@ -36,14 +39,14 @@ contract Schedule {
         for (i = 1; i <= 12; i++){
             secondsInMonth = DAY_IN_SECONDS * getDaysInMonth(i);
             if ((secondsInMonth + secondsCounted) > timestamp){
-                datetime.pickMonth = i;
+                datetime.pick.push(Pick(pickMonth)) = i;
                 break;
             }
             secondsCounted += secondsInMonth;
         }
         for (i = 1; i <= getDaysInMonth(datetime); i++){
             if ((DAY_IN_SECONDS + secondsCounted) > timestamp){
-                datetime.pickDay = i;
+                datetime.pick.push(Pick(pickDay)) = i;
                 break;
             }
             secondsCounted += DAY_IN_SECONDS;
@@ -78,4 +81,5 @@ contract Schedule {
         timestamp += MINUTE_IN_SECONDS * (minute);
         return timestamp;
     }
+    function isOwner() public view returns (bool);
 }
