@@ -8,11 +8,11 @@ contract Schedule {
         uint8 pickHour;
         uint8 pickMinute;
         uint8 pickMonth;
+        uint8 pickWeekDay;
     }
 
     address owner;
-    mapping(address => uint) scheduleData;
-    address[] public schedule;
+    mapping(address => Pick) public picks;
     Pick[] public pick;
 
     uint constant DAY_IN_SECONDS = 86400;
@@ -31,7 +31,7 @@ contract Schedule {
         }
     }
 
-    function getTimestamp(uint timestamp) public returns (Schedule datetime){
+    function getTimestamp(uint timestamp) public view returns (Pick _datetime){
         uint secondsCounted = 0;
         uint8 i;
         uint secondsInMonth;
@@ -39,25 +39,31 @@ contract Schedule {
         for (i = 1; i <= 12; i++){
             secondsInMonth = DAY_IN_SECONDS * getDaysInMonth(i);
             if ((secondsInMonth + secondsCounted) > timestamp){
-                datetime.pick.push(Pick(pickMonth)) = i;
+                _datetime.pickMonth = i;
+                Pick storage pickMonth = pick[timestamp];
                 break;
             }
             secondsCounted += secondsInMonth;
         }
-        for (i = 1; i <= getDaysInMonth(datetime); i++){
+        for (i = 1; i <= getDaysInMonth(_datetime); i++){
             if ((DAY_IN_SECONDS + secondsCounted) > timestamp){
-                datetime.pick.push(Pick(pickDay)) = i;
+                _datetime.pickDay = i;
+                Pick storage pickDay = pick[timestamp];
                 break;
             }
             secondsCounted += DAY_IN_SECONDS;
         }
-        datetime.pickHour = getScheduleHour(timestamp);
-        datetime.pickMinute = getScheduleMinute(timestamp);
-        datetime.pickDay = getScheduleDay(timestamp);
+        _datetime.pickHour = getScheduleHour(timestamp);
+        _datetime.pickMinute = getScheduleMinute(timestamp);
+        _datetime.pickDay = getScheduleDay(timestamp);
+        _datetime.pickWeekDay = getWeekDay(timestamp);
     }
-
+    //Given a unix timestamp, returns the DateTime value for the timestamp.
     function getScheduleDay(uint timestamp) public view returns (uint8){
         return getTimestamp(timestamp).pickDay;
+    }
+    function getScheduleMonth(uint timestamp) public view returns (uint8) {
+        return getTimestamp(timestamp).pickMonth;
     }
     function getScheduleHour(uint timestamp) public view returns (uint8){
         return uint8((timestamp / 60 / 60) % 24);
@@ -65,8 +71,9 @@ contract Schedule {
     function getScheduleMinute(uint timestamp) public view returns (uint8){
         return uint8((timestamp / 60) % 60);
     }
-    function getScheduleMonth(uint timestamp) public view returns (uint8) {
-        return getTimestamp(timestamp).pickMonth;
+    //Com o algoritmo Zeller, o sábado é usado = 0. Para a conversão, a aritmética modular simples é usada: Dia da semana = ((dia da semana + 5) mod 7) + 1.
+    function getWeekDay(uint timestamp) public view returns (uint8){
+        return uint8(((timestamp / DAY_IN_SECONDS + 5) % 7) + 1);
     }
     function calculateScheduleTimestamp(uint8 month, uint8 day, uint8 hour, uint8 minute) public returns (uint timestamp) {
         uint16 i;
