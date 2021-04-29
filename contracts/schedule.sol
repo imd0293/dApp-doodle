@@ -31,7 +31,7 @@ contract Schedule {
         }
     }
 
-    function getTimestamp(uint timestamp) public view returns (Pick _datetime){
+    function getTimestamp(uint timestamp) public view returns (Pick memory _datetime){
         uint secondsCounted = 0;
         uint8 i;
         uint secondsInMonth;
