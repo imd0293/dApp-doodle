@@ -1,20 +1,20 @@
 // ENDEREÇO EHTEREUM DO CONTRATO
 var contractAddress = "0x5F408b84B13F470C689311d130396E1dd6Db16B4";
 
-// Inicializa o objeto DApp
+// Inicializa o objeto DappDoodle
 document.addEventListener("DOMContentLoaded", onDocumentLoad);
 function onDocumentLoad() {
-  DApp.init();
+  DappDoodle.init();
 }
 
-// Nosso objeto DApp que irá armazenar a instância web3
-const DApp = {
+// Nosso objeto DappDoodle que irá armazenar a instância web3
+const DappDoodle = {
   web3: null,
   contracts: {},
   account: null,
 
   init: function () {
-    return DApp.initWeb3();
+    return DappDoodle.initWeb3();
   },
 
   // Inicializa o provedor web3
@@ -24,30 +24,30 @@ const DApp = {
         const accounts = await window.ethereum.request({ // Requisita primeiro acesso ao Metamask
           method: "eth_requestAccounts",
         });
-        DApp.account = accounts[0];
-        window.ethereum.on('accountsChanged', DApp.updateAccount); // Atualiza se o usuário trcar de conta no Metamaslk
+        DappDoodle.account = accounts[0];
+        window.ethereum.on('accountsChanged', DappDoodle.updateAccount); // Atualiza se o usuário trcar de conta no Metamaslk
       } catch (error) {
         console.error("Usuário negou acesso ao web3!");
         return;
       }
-      DApp.web3 = new Web3(window.ethereum);
+      DappDoodle.web3 = new Web3(window.ethereum);
     } else {
       console.error("Instalar MetaMask!");
       return;
     }
-    return DApp.initContract();
+    return DappDoodle.initContract();
   },
 
-  // Atualiza 'DApp.account' para a conta ativa no Metamask
+  // Atualiza 'DappDoodle.account' para a conta ativa no Metamask
   updateAccount: async function() {
-    DApp.account = (await DApp.web3.eth.getAccounts())[0];
+    DappDoodle.account = (await DappDoodle.web3.eth.getAccounts())[0];
     atualizaInterface();
   },
 
   // Associa ao endereço do seu contrato
   initContract: async function () {
-    DApp.contracts.Contrato = new DApp.web3.eth.Contract(abi, contractAddress);
-    return DApp.render();
+    DappDoodle.contracts.Schedule = new DappDoodle.web3.eth.Contract(abi, contractAddress);
+    return DappDoodle.render();
   },
 
   // Inicializa a interface HTML com os dados obtidos
@@ -55,3 +55,33 @@ const DApp = {
     inicializaInterface();
   },
 };
+
+
+
+// *** MÉTODOS (de consulta - view) DO CONTRATO ** //
+
+
+
+function verDia() { //function getScheduleDay(uint timestamp) public view returns (uint8)
+  return DappDoodle.contracts.Schedule.methods.verDia().call();
+}
+
+function verMes() { //function getScheduleMonth(uint timestamp) public view returns (uint8)
+  return DappDoodle.contracts.Schedule.methods.verMes().call();
+}
+
+function verHora() { //function getScheduleHour(uint timestamp) public view returns (uint8)
+  return DappDoodle.contracts.Schedule.methods.verHora().call();
+}
+
+function verMinuto() { //function getScheduleMinute(uint timestamp) public view returns (uint8)
+  return DappDoodle.contracts.Schedule.methods.verMinuto().call();
+}
+
+function verDiaDaSemana() { //function getWeekDay(uint timestamp) public view returns (uint8)
+  return DappDoodle.contracts.Schedule.methods.verDiaDaSemana().call();
+}
+
+function ehDono() {
+  return DappDoodle.contracts.Schedule.methods.isOwner().call({ from: DappDoodle.account });
+}
