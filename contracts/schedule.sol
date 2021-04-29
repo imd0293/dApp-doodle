@@ -19,7 +19,7 @@ contract Schedule {
     function getDaysInMonth(uint8 month) public returns (uint8){
         if (month == 2){
             return 29;
-        } 
+        }
         else if (month % 2 == 0){
             return 30;
         }
@@ -44,7 +44,7 @@ contract Schedule {
         for (i = 1; i <= getDaysInMonth(datetime); i++){
             if ((DAY_IN_SECONDS + secondsCounted) > timestamp){
                 datetime.pickDay = i;
-                break;  
+                break;
             }
             secondsCounted += DAY_IN_SECONDS;
         }
@@ -53,16 +53,16 @@ contract Schedule {
         datetime.pickDay = getScheduleDay(timestamp);
     }
 
-    function getScheduleDay(uint timestamp) public returns (uint8){
+    function getScheduleDay(uint timestamp) public view returns (uint8){
         return getTimestamp(timestamp).pickDay;
     }
-    function getScheduleHour(uint timestamp) public returns (uint8){
+    function getScheduleHour(uint timestamp) public view returns (uint8){
         return uint8((timestamp / 60 / 60) % 24);
     }
-    function getScheduleMinute(uint timestamp) public returns (uint8){
+    function getScheduleMinute(uint timestamp) public view returns (uint8){
         return uint8((timestamp / 60) % 60);
     }
-    function getScheduleMonth(uint timestamp) public returns (uint8) {
+    function getScheduleMonth(uint timestamp) public view returns (uint8) {
         return getTimestamp(timestamp).pickMonth;
     }
     function calculateScheduleTimestamp(uint8 month, uint8 day, uint8 hour, uint8 minute) public returns (uint timestamp) {
